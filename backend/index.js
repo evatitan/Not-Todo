@@ -11,7 +11,8 @@ const Joi = require('joi');
 // const validator = require('express-joi-validation').createValidator({});
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const HTTP_PORT = process.env.HTTP_PORT || 4000;
+const HTTP_ADDR = process.env.HTTP_ADDR || '127.0.0.1'; // === localhost
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -51,7 +52,7 @@ app.get('/notTodos/:id', async (req, res) => {
 	}
 });
 
-app.post('/new-notTodo', mw.createNotTodoSchema, authRequiredMiddleware, async (req, res) => {
+app.post('/new-notTodo', authRequiredMiddleware, mw.createNotTodoSchema, async (req, res) => {
 	const userId = req.session.user_id;
 
 	if (!userId) {
@@ -175,6 +176,6 @@ app.use(function(req, res, next) {
 	next();
 });
 
-app.listen(PORT, () => {
-	console.log(`Server is running on ${PORT}`);
+app.listen(HTTP_PORT, HTTP_ADDR, () => {
+	console.log(`Server is running on ${HTTP_ADDR}:${HTTP_PORT}`);
 });

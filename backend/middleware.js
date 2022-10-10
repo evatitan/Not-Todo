@@ -67,7 +67,7 @@ function loginValidation(req, res, next) {
 function createNotTodoSchema(req, res, next) {
 	if (valitation.createNotTodoSchema.validate(req.body).error) {
 		let errorDetail = valitation.createNotTodoSchema.validate(req.body).error.details[0];
-		res.status(401).send(errorDetail);
+		res.status(400).send(errorDetail);
 		return;
 	}
 	next();

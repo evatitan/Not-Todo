@@ -1,0 +1,33 @@
+.container {
+  padding: 0 2rem;
+  margin-bottom: 50px;
+}
+
+.container h2{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 4rem;
+  color: white;
+  font-weight: bold;
+}
+
+.container ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  display: flex;
+  justify-content: space-around;
+}
+
+.container a{
+  text-decoration: none;
+  font-size: 1.5rem;
+}
+
+.container a:hover,
+.container a:active,
+.container a.active {
+  color:#fee440;
+}

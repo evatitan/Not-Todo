@@ -26,7 +26,7 @@ function NewNotTodoForm(props) {
 			description: enteredDescription
 		};
 		dispatch(addData(notTodoObj));
-		navigate('/notTodos');
+		navigate('/not-todos');
 	};
 
 	return (

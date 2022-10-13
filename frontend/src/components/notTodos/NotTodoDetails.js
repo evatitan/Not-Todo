@@ -15,7 +15,7 @@ function NotTodoDetails(props) {
 				<h5>{date}</h5>
 				<p>{description}</p>
 			</div>
-			<Link to="/notTodos">
+			<Link to="/not-todos">
 				<button onClick={() => dispatch(fetchData())}>back</button>
 			</Link>
 		</div>

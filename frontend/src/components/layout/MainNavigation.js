@@ -15,7 +15,7 @@ function MainNavigation() {
 			<nav>
 				<ul>
 					<li>
-						<NavLink to="/home" activeclassname={classes.active}>
+						<NavLink to="/" activeclassname={classes.active}>
 							Home
 						</NavLink>
 					</li>
@@ -23,7 +23,7 @@ function MainNavigation() {
 					{isLoggedIn && (
 						<li>
 							<NavLink
-								to="/notTodos"
+								to="/not-todos"
 								activeclassname={classes.active}
 								onClick={() => {
 									dispatch(fetchData());
@@ -36,7 +36,7 @@ function MainNavigation() {
 
 					{isLoggedIn && (
 						<li>
-							<NavLink to="/new-notTodo" activeclassname={classes.active}>
+							<NavLink to="/not-todos/new" activeclassname={classes.active}>
 								Add
 							</NavLink>
 						</li>

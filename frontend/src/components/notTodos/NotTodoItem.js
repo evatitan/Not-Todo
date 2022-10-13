@@ -2,7 +2,6 @@ import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { showData, removeData } from '../../store/notTodoSlice';
 
-
 import classes from './NotTodoItem.module.css';
 
 function NotTodoItem(props) {
@@ -11,7 +10,7 @@ function NotTodoItem(props) {
 
 	const deleteItemHandler = () => {
 		dispatch(removeData(props.item.id));
-		navigate('/notTodos');
+		navigate('/not-todos');
 	};
 
 	return (
@@ -24,7 +23,7 @@ function NotTodoItem(props) {
 			<div className={classes.actions}>
 				<button onClick={deleteItemHandler}>Delete</button>
 
-				<Link to={`/notTodos/${props.item.id}`}>
+				<Link to={`/not-todos/${props.item.id}`}>
 					<button
 						onClick={() => {
 							dispatch(showData(props.item.id));

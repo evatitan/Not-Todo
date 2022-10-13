@@ -14,8 +14,6 @@ import Notification from './components/ui/Notification';
 
 import './App.css';
 
-// let initial = false;
-
 function App() {
 	const notification = useSelector((state) => state.ui.notification);
 
@@ -40,9 +38,9 @@ function App() {
 			<Layout>
 				<Routes>
 					<Route path="/" element={<Home />} />
-					<Route path="/notTodos" element={<NotTodos />} exact />
-					<Route path="/notTodos/:notTodosId" element={<NotTodoDetail />} />
-					<Route path="/new-notTodo" element={<NewNotTodo />} />
+					<Route path="/not-todos" element={<NotTodos />} exact />
+					<Route path="/not-todos/:notTodosId" element={<NotTodoDetail />} />
+					<Route path="/not-todos/new" element={<NewNotTodo />} />
 					<Route path="/register" element={<RegisterPage />} />
 					<Route path="/login" element={<LoginPage />} />
 					<Route path="/profile" element={<Profile />} />

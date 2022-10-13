@@ -22,7 +22,7 @@ function Login(props) {
 			password: enteredPassword
 		};
 		dispatch(login(user));
-		navigate('/home');
+		navigate('/');
 	};
 
 	return (

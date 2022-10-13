@@ -42,7 +42,7 @@ const authSlice = createSlice({
 export const register = (user) => {
 	return async (dispatch) => {
 		const register = async () => {
-			const response = await fetch('/register', {
+			const response = await fetch('/api/register', {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
@@ -91,7 +91,7 @@ export const register = (user) => {
 export const login = (user) => {
 	return async (dispatch) => {
 		const login = async () => {
-			const response = await fetch('/login', {
+			const response = await fetch('/api/login', {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
@@ -134,7 +134,7 @@ export const login = (user) => {
 export const profile = () => {
 	return async (dispatch) => {
 		const profile = async () => {
-			const response = await fetch('/profile');
+			const response = await fetch('/api/profile');
 			if (!response.ok) {
 				throw new Error('something went wrong');
 			}
@@ -162,7 +162,7 @@ export const profile = () => {
 export const logout = () => {
 	return async (dispatch) => {
 		const logout = async () => {
-			const response = await fetch('/logout', {
+			const response = await fetch('/api/logout', {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',

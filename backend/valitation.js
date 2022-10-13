@@ -19,7 +19,6 @@ const createNotTodoSchema = Joi.object({
 });
 
 // query valitation for GET & DELETE
-
 const notTodoQuerySchema = Joi.object({
 	id: Joi.number().required()
 });

@@ -6,10 +6,6 @@ const { nanoid } = require('nanoid');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
-// const validator = require('./valitation');
-const Joi = require('joi');
-// const validator = require('express-joi-validation').createValidator({});
-
 const app = express();
 const HTTP_PORT = process.env.HTTP_PORT || 4000;
 const HTTP_ADDR = process.env.HTTP_ADDR || '127.0.0.1'; // === localhost
@@ -29,9 +25,7 @@ const userInSesessionMiddleware = mw.createUserInSession(db);
 // 	})
 // );
 
-// Route to get all not-to-dos
-
-app.get('/notTodos', authRequiredMiddleware, async (req, res) => {
+app.get('/api/not-todos', authRequiredMiddleware, async (req, res) => {
 	try {
 		const notTodos = await db.getNotTodosByUserId(req.session.user_id);
 		res.status(200).send(notTodos);
@@ -40,7 +34,7 @@ app.get('/notTodos', authRequiredMiddleware, async (req, res) => {
 	}
 });
 
-app.get('/notTodos/:id', async (req, res) => {
+app.get('/api/not-todos/:id', async (req, res) => {
 	let idValid = req.params.id;
 	if (idValid) {
 		try {
@@ -52,7 +46,7 @@ app.get('/notTodos/:id', async (req, res) => {
 	}
 });
 
-app.post('/new-notTodo', authRequiredMiddleware, mw.createNotTodoSchema, async (req, res) => {
+app.post('/api/not-todos/new', authRequiredMiddleware, mw.createNotTodoSchema, async (req, res) => {
 	const userId = req.session.user_id;
 
 	if (!userId) {
@@ -72,12 +66,12 @@ app.post('/new-notTodo', authRequiredMiddleware, mw.createNotTodoSchema, async (
 	}
 });
 
-app.delete('/notTodos/:id', mw.removeNotTodoQuerySchema, async (req, res) => {
+app.delete('/api/not-todos/:id', mw.removeNotTodoQuerySchema, async (req, res) => {
 	let id = Number(req.params.id);
 	try {
 		let amountDeleted = await db.removeNotTodo(id);
 		if (amountDeleted === 1) {
-			res.status(204).send({ message: 'item deleted' });
+			res.status(204).end();
 		} else {
 			res.status(404).end();
 		}
@@ -86,7 +80,7 @@ app.delete('/notTodos/:id', mw.removeNotTodoQuerySchema, async (req, res) => {
 	}
 });
 
-app.post('/register', mw.registerValidation, userInSesessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
+app.post('/api/register', mw.registerValidation, userInSesessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
 	let email = req.body.email;
 	let password = req.body.password;
 
@@ -103,7 +97,7 @@ app.post('/register', mw.registerValidation, userInSesessionMiddleware, mw.mustB
 	}
 });
 
-app.post('/login', mw.loginValidation, userInSesessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
+app.post('/api/login', mw.loginValidation, userInSesessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
 	let email = req.body.email;
 	let passwordHashed = mw.passwordHash(req.body.password);
 
@@ -128,7 +122,7 @@ app.post('/login', mw.loginValidation, userInSesessionMiddleware, mw.mustBeAnony
 	}
 });
 
-app.get('/profile', authRequiredMiddleware, async (req, res) => {
+app.get('/api/profile', authRequiredMiddleware, async (req, res) => {
 	const userId = req.session.user_id;
 	if (!userId) {
 		res.status(404).send({ message: 'not found' }).end();
@@ -141,7 +135,7 @@ app.get('/profile', authRequiredMiddleware, async (req, res) => {
 	}
 });
 
-app.post('/logout', authRequiredMiddleware, async (req, res) => {
+app.post('/api/logout', authRequiredMiddleware, async (req, res) => {
 	const session_id = req.session.session_id;
 
 	if (!session_id) {

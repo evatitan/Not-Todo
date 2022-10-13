@@ -74,9 +74,7 @@ function createNotTodoSchema(req, res, next) {
 }
 
 function removeNotTodoQuerySchema(req, res, next) {
-	console.log('req.params', req.params);
 	const result = valitation.notTodoQuerySchema.validate(req.params);
-	console.log('result', result);
 	let error = result.error;
 	if (error) {
 		res.status(401).send(error.details[0]);

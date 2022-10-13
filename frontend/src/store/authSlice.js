@@ -14,9 +14,8 @@ const authSlice = createSlice({
 		getUser: (state, action) => {
 			state.user = action.payload.user;
 		},
-
-		isLoggedIn: (state) => {
-			state.isLoggedIn = !state.isLoggedIn;
+		setLogin: (state, action) => {
+			state.isLoggedIn = action.payload;
 		},
 		isLoading: (state) => {
 			state.isLoading = !state.isLoading;
@@ -99,7 +98,7 @@ export const login = (user) => {
 		};
 		try {
 			let result = await login();
-			dispatch(authActions.isLoggedIn());
+			dispatch(authActions.setLogin(true));
 			dispatch(authActions.isLoading());
 			dispatch(
 				uiActions.showNotification({
@@ -108,6 +107,7 @@ export const login = (user) => {
 				})
 			);
 		} catch (error) {
+			dispatch(authActions.setLogin(false));
 			dispatch(
 				uiActions.showNotification({
 					title: 'error',
@@ -165,7 +165,7 @@ export const logout = () => {
 		};
 		try {
 			await logout();
-			dispatch(authActions.isLoggedIn());
+			dispatch(authActions.setLogin(true));
 			dispatch(authActions.isLoading());
 			dispatch(
 				uiActions.showNotification({
@@ -174,6 +174,7 @@ export const logout = () => {
 				})
 			);
 		} catch (error) {
+			dispatch(authActions.setLogin(false));
 			dispatch(
 				uiActions.showNotification({
 					title: 'error',

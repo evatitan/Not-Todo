@@ -39,7 +39,7 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Home />} />
 					<Route path="/not-todos" element={<NotTodos />} exact />
-					<Route path="/not-todos/:notTodosId" element={<NotTodoDetail />} />
+					<Route path="/not-todos/:notT odosId" element={<NotTodoDetail />} />
 					<Route path="/not-todos/new" element={<NewNotTodo />} />
 					<Route path="/register" element={<RegisterPage />} />
 					<Route path="/login" element={<LoginPage />} />

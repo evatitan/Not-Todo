@@ -1,11 +1,12 @@
 import React, { useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../../store/authSlice';
 // import { authActions } from '../../store/authSlice';
 import classes from './Login.module.css';
 
 function Login(props) {
+	const isLoading = useSelector((state) => state.auth.isLoading);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
@@ -22,10 +23,9 @@ function Login(props) {
 			password: enteredPassword
 		};
 		dispatch(login(user));
-		navigate('/');
+		navigate('/not-todos');
 	};
-
-	return (
+	const loginHtml = (
 		<div className={classes.grid}>
 			<div className={classes.card}>
 				<h1>Login</h1>
@@ -49,6 +49,13 @@ function Login(props) {
 				</form>
 			</div>
 		</div>
+	);
+
+	return (
+		<React.Fragment>
+			{isLoading && <p>Loading</p>}
+			{!isLoading && loginHtml}
+		</React.Fragment>
 	);
 }
 

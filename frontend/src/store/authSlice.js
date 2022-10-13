@@ -2,9 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { uiActions } from './uiSlice';
 
 const initialState = {
-	users: [],
 	user: {},
-	sessions: [],
 	isLoggedIn: false,
 	isLoading: false
 };
@@ -13,28 +11,15 @@ const authSlice = createSlice({
 	name: 'auth',
 	initialState,
 	reducers: {
-		addUser: (state, action) => {
-			state.users = [ ...state.users, action.payload.user ];
-		},
-
-		getUsers: (state, action) => {
-			state.users = [ ...action.payload.user ];
-		},
-
 		getUser: (state, action) => {
 			state.user = action.payload.user;
 		},
 
 		isLoggedIn: (state) => {
-			state.isLoggedIn = true;
+			state.isLoggedIn = !state.isLoggedIn;
 		},
-
-		login: (state, action) => {
-			state.sessions = [ ...state.sessions, action.payload ];
-		},
-
-		logout: (state) => {
-			state.isLoggedIn = false;
+		isLoading: (state) => {
+			state.isLoading = !state.isLoading;
 		}
 	}
 });
@@ -42,6 +27,7 @@ const authSlice = createSlice({
 export const register = (user) => {
 	return async (dispatch) => {
 		const register = async () => {
+			dispatch(authActions.isLoading());
 			const response = await fetch('/api/register', {
 				method: 'POST',
 				headers: {
@@ -68,9 +54,8 @@ export const register = (user) => {
 		};
 
 		try {
-			// call the fn createUser(), so you also can catch error from this fn.
 			let result = await register();
-			console.log('result', result);
+			dispatch(authActions.isLoading());
 			dispatch(
 				uiActions.showNotification({
 					title: 'success',
@@ -91,6 +76,7 @@ export const register = (user) => {
 export const login = (user) => {
 	return async (dispatch) => {
 		const login = async () => {
+			dispatch(authActions.isLoading());
 			const response = await fetch('/api/login', {
 				method: 'POST',
 				headers: {
@@ -108,12 +94,13 @@ export const login = (user) => {
 				throw new Error('something went wrong');
 			}
 
-			const data = await response.json(); // Object { message: "Login successfully" }
+			const data = await response.json();
 			return data;
 		};
 		try {
 			let result = await login();
 			dispatch(authActions.isLoggedIn());
+			dispatch(authActions.isLoading());
 			dispatch(
 				uiActions.showNotification({
 					title: 'success',
@@ -134,6 +121,7 @@ export const login = (user) => {
 export const profile = () => {
 	return async (dispatch) => {
 		const profile = async () => {
+			dispatch(authActions.isLoading());
 			const response = await fetch('/api/profile');
 			if (!response.ok) {
 				throw new Error('something went wrong');
@@ -148,6 +136,7 @@ export const profile = () => {
 					user: result || {}
 				})
 			);
+			dispatch(authActions.isLoading());
 		} catch (error) {
 			dispatch(
 				uiActions.showNotification({
@@ -162,6 +151,7 @@ export const profile = () => {
 export const logout = () => {
 	return async (dispatch) => {
 		const logout = async () => {
+			dispatch(authActions.isLoading());
 			const response = await fetch('/api/logout', {
 				method: 'POST',
 				headers: {
@@ -175,7 +165,8 @@ export const logout = () => {
 		};
 		try {
 			await logout();
-			dispatch(authActions.logout());
+			dispatch(authActions.isLoggedIn());
+			dispatch(authActions.isLoading());
 			dispatch(
 				uiActions.showNotification({
 					title: 'success',

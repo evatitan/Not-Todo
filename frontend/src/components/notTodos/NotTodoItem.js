@@ -1,32 +1,38 @@
-import { useDispatch } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { showData, removeData } from '../../store/notTodoSlice';
 
 import classes from './NotTodoItem.module.css';
 
 function NotTodoItem(props) {
+	const isLoading = useSelector((state) => state.notTodo.isLoading);
+	const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const { title, date, description, id } = props.item;
+	const datePrint = date.slice(0, 10);
 
 	const deleteItemHandler = () => {
 		dispatch(removeData(props.item.id));
 		navigate('/not-todos');
 	};
 
-	return (
+	const notTodos = (
 		<div className={classes.card}>
 			<h2>
-				<i> {props.item.title} </i>
+				<i> {title} </i>
 			</h2>
-			<h5>{props.item.date}</h5>
-			<p>{props.item.description}</p>
+			<h5>{datePrint}</h5>
+			<p>{description}</p>
 			<div className={classes.actions}>
 				<button onClick={deleteItemHandler}>Delete</button>
 
-				<Link to={`/not-todos/${props.item.id}`}>
+				<Link to={`/not-todos/${id}`}>
 					<button
 						onClick={() => {
-							dispatch(showData(props.item.id));
+							dispatch(showData(id));
 						}}
 					>
 						Detail
@@ -34,6 +40,13 @@ function NotTodoItem(props) {
 				</Link>
 			</div>
 		</div>
+	);
+
+	return (
+		<React.Fragment>
+			{isLoading && <p>Loading</p>}
+			{!isLoading && isLoggedIn && notTodos}
+		</React.Fragment>
 	);
 }
 

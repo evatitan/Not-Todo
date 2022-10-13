@@ -11,7 +11,7 @@ function MainNavigation() {
 
 	return (
 		<header className={classes.container}>
-			<h2>Not-To-Do Sticky Wall</h2>
+			<h2>Not-ToDo Sticky Wall</h2>
 			<nav>
 				<ul>
 					<li>

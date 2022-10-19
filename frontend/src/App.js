@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect } from 'react';
+import MetaTags from 'react-meta-tags';
 import { Route, Routes, Navigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import CookieConsent from 'react-cookie-consent';
@@ -14,7 +15,6 @@ import Notification from './components/ui/Notification';
 import { authActions } from './store/authSlice';
 import './App.css';
 
-// 
 export const checkLogin = () => {
 	return async (dispatch) => {
 		try {
@@ -30,12 +30,19 @@ function App() {
 	const dispatch = useDispatch();
 	const notification = useSelector((state) => state.ui.notification);
 
-	useEffect(() => {
-		dispatch(checkLogin());
-	}, []);
+	useEffect(
+		() => {
+			dispatch(checkLogin());
+		},
+		[ dispatch ]
+	);
 
 	return (
 		<Fragment>
+			<MetaTags>
+				<title>NOT-TODOs</title>
+				<meta name="description" content="Write down you NOT-TODOs" />
+			</MetaTags>
 			{notification && (
 				<Notification statue={notification.status} title={notification.title} message={notification.message} />
 			)}
@@ -55,7 +62,7 @@ function App() {
 				This site uses cookies to enhance user experience. See our <Link href="/">Privacy policy</Link>
 			</CookieConsent>
 		</Fragment>
-	);
+	)
 }
 
 export default App;

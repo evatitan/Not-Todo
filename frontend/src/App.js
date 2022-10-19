@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect } from 'react';
-import MetaTags from 'react-meta-tags';
 import { Route, Routes, Navigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import CookieConsent from 'react-cookie-consent';
@@ -39,10 +38,6 @@ function App() {
 
 	return (
 		<Fragment>
-			<MetaTags>
-				<title>NOT-TODOs</title>
-				<meta name="description" content="Write down you NOT-TODOs" />
-			</MetaTags>
 			{notification && (
 				<Notification statue={notification.status} title={notification.title} message={notification.message} />
 			)}
@@ -62,7 +57,7 @@ function App() {
 				This site uses cookies to enhance user experience. See our <Link href="/">Privacy policy</Link>
 			</CookieConsent>
 		</Fragment>
-	)
+	);
 }
 
 export default App;

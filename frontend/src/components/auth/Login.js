@@ -28,7 +28,7 @@ function Login(props) {
 	const loginHtml = (
 		<div className={classes.grid}>
 			<div className={classes.card}>
-				<h1>Login</h1>
+				<h1 data-testid="title">Login</h1>
 				<form className={classes.form} onSubmit={submitHandler}>
 					<div className={classes.control}>
 						<label htmlFor="email">Email</label>

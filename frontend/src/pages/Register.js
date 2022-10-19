@@ -6,8 +6,8 @@ function RegisterPage() {
 	return (
 		<Fragment>
 			<MetaTags>
-				<title>Profile</title>
-				<meta name="description" content="Profile" />
+				<title>Register</title>
+				<meta name="description" content="Register" />
 			</MetaTags>
 			<Register />
 		</Fragment>

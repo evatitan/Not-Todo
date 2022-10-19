@@ -4,6 +4,7 @@ import { Route, Routes, Navigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import CookieConsent from 'react-cookie-consent';
 import NotTodoDetail from './pages/NotTodoDetail';
+
 import NotTodos from './pages/NotTodos';
 import NewNotTodo from './pages/NewNotTodo';
 import Layout from './components/layout/Layout';
@@ -62,7 +63,7 @@ function App() {
 				This site uses cookies to enhance user experience. See our <Link href="/">Privacy policy</Link>
 			</CookieConsent>
 		</Fragment>
-	)
+	);
 }
 
 export default App;

@@ -58,7 +58,7 @@ function registerValidation(req, res, next) {
 function loginValidation(req, res, next) {
 	if (valitation.loginSchema.validate(req.body).error) {
 		let errorDetail = valitation.loginSchema.validate(req.body).error.details[0];
-		res.status(401).send(errorDetail);
+		res.status(400).send(errorDetail);
 		return;
 	}
 	next();
@@ -74,9 +74,7 @@ function createNotTodoSchema(req, res, next) {
 }
 
 function removeNotTodoQuerySchema(req, res, next) {
-	console.log('req.params', req.params);
 	const result = valitation.notTodoQuerySchema.validate(req.params);
-	console.log('result', result);
 	let error = result.error;
 	if (error) {
 		res.status(401).send(error.details[0]);

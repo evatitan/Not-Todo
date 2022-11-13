@@ -1,11 +1,12 @@
 import React, { useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../../store/authSlice';
 // import { authActions } from '../../store/authSlice';
 import classes from './Register.module.css';
 
 function Register() {
+	const isLoading = useSelector((state) => state.auth.isLoading);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
@@ -26,7 +27,7 @@ function Register() {
 		navigate('/login');
 	};
 
-	return (
+	const registerHtml = (
 		<div className={classes.grid}>
 			<div className={classes.card}>
 				<h1>Register</h1>
@@ -51,6 +52,13 @@ function Register() {
 				</form>
 			</div>
 		</div>
+	);
+
+	return (
+		<React.Fragment>
+			{isLoading && <p>Loading</p>}
+			{!isLoading && registerHtml}
+		</React.Fragment>
 	);
 }
 

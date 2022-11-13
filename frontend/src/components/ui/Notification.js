@@ -1,23 +1,43 @@
+import React, { useEffect, useState } from 'react';
 import classes from './Notification.module.css';
 
 const Notification = (props) => {
+	const [ show, setShow ] = useState(true);
+	const { title, message } = props;
 	let specialClasses = '';
 
-	if (props.title === 'error') {
+	if (title === 'error') {
 		specialClasses = classes.error;
 	}
 
-	if (props.title === 'success') {
+	if (title === 'success') {
 		specialClasses = classes.success;
 	}
 
 	const cssClasses = `${classes.notification} ${specialClasses}`;
 
+	useEffect(
+		() => {
+			const timer = setTimeout(() => {
+				setShow(false);
+			}, 2500);
+
+			return () => {
+				clearTimeout(timer);
+			};
+		},
+		[ show ]
+	);
+
 	return (
-		<section className={cssClasses}>
-			<h2>{props.title}</h2>
-			<p>{props.message}</p>
-		</section>
+		<React.Fragment>
+			{show && (
+				<section className={cssClasses}>
+					<h2>{title}</h2>
+					<p>{message}</p>
+				</section>
+			)}
+		</React.Fragment>
 	);
 };
 

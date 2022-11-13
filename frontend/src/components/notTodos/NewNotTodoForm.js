@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 // import { notTodoActions } from '../../store/notTodoSlice';
 import { addData } from '../../store/notTodoSlice';
@@ -7,6 +7,7 @@ import { addData } from '../../store/notTodoSlice';
 import classes from './NewNotTodoForm.module.css';
 
 function NewNotTodoForm(props) {
+	const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 
@@ -26,33 +27,38 @@ function NewNotTodoForm(props) {
 			description: enteredDescription
 		};
 		dispatch(addData(notTodoObj));
-		navigate('/notTodos');
+		navigate('/not-todos');
 	};
 
 	return (
-		<div className={classes.grid}>
-			<div className={classes.card}>
-				<form className={classes.form}>
-					<div className={classes.control}>
-						<label htmlFor="title">Title</label>
-						<input type="text" required id="title" ref={titleInputRef} />
-					</div>
+		<React.Fragment>
+			{isLoggedIn && (
+				<div className={classes.grid}>
+					<div className={classes.card}>
+						<form className={classes.form}>
+							<div className={classes.control}>
+								<label htmlFor="title">Title</label>
+								<input type="text" required id="title" ref={titleInputRef} />
+							</div>
 
-					<div className={classes.control}>
-						<label htmlFor="date">Date</label>
-						<input type="date" required id="date" ref={dateInputRef} />
-					</div>
-					<div className={classes.control}>
-						<label htmlFor="description">Description</label>
-						<textarea id="description" required rows="5" ref={descriptionInputRef} />
-					</div>
+							<div className={classes.control}>
+								<label htmlFor="date">Date</label>
+								<input type="date" required id="date" ref={dateInputRef} />
+							</div>
+							<div className={classes.control}>
+								<label htmlFor="description">Description</label>
+								<textarea id="description" required rows="5" ref={descriptionInputRef} />
+							</div>
 
-					<div className={classes.actions}>
-						<button onClick={submitHandler}> Add </button>
+							<div className={classes.actions}>
+								<button onClick={submitHandler}> Add </button>
+							</div>
+						</form>
 					</div>
-				</form>
-			</div>
-		</div>
+				</div>
+			)}
+			{!isLoggedIn && <p>Please login first</p>}
+		</React.Fragment>
 	);
 }
 

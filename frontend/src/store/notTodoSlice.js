@@ -3,7 +3,7 @@ import { uiActions } from './uiSlice';
 
 const initialState = {
 	items: [],
-	changed: false
+	isLoading: false
 };
 
 const notTodoSlice = createSlice({
@@ -12,6 +12,9 @@ const notTodoSlice = createSlice({
 	reducers: {
 		replaceNotTodo: (state, action) => {
 			state.items = action.payload.items;
+		},
+		isLoading: (state) => {
+			state.isLoading = !state.isLoading;
 		}
 	}
 });
@@ -19,9 +22,10 @@ const notTodoSlice = createSlice({
 export const fetchData = () => {
 	return async (dispatch) => {
 		const fetchData = async () => {
-			const response = await fetch('/notTodos');
+			dispatch(notTodoActions.isLoading());
+			const response = await fetch('/api/not-todos');
 			if (!response.ok) {
-				throw new Error('Could not fetch not-to-do!');
+				throw new Error('Could not fetch not-todos!');
 			}
 			const data = await response.json();
 			return data;
@@ -29,6 +33,7 @@ export const fetchData = () => {
 
 		try {
 			const notTodoData = await fetchData();
+			dispatch(notTodoActions.isLoading());
 			dispatch(
 				notTodoActions.replaceNotTodo({
 					items: notTodoData || []
@@ -38,7 +43,7 @@ export const fetchData = () => {
 			dispatch(
 				uiActions.showNotification({
 					title: 'error',
-					message: 'Fetching not-to-dos failed!'
+					message: 'Fetching not-todos failed!'
 				})
 			);
 		}
@@ -48,15 +53,17 @@ export const fetchData = () => {
 export const showData = (id) => {
 	return async (dispatch) => {
 		const showData = async () => {
-			const response = await fetch(`/notTodos/${id}`);
+			dispatch(notTodoActions.isLoading());
+			const response = await fetch(`/api/not-todos/${id}`);
 			if (!response.ok) {
-				throw new Error('Could not fetch not-to-do!');
+				throw new Error('Could not fetch not-todos!');
 			}
 			const data = await response.json();
 			return data;
 		};
 		try {
 			const notTodoData = await showData();
+			dispatch(notTodoActions.isLoading());
 			dispatch(
 				notTodoActions.replaceNotTodo({
 					items: [ { ...notTodoData } ] || []
@@ -66,7 +73,7 @@ export const showData = (id) => {
 			dispatch(
 				uiActions.showNotification({
 					title: 'error',
-					message: 'Fetching not-to-do failed!'
+					message: 'Fetching not-todos failed!'
 				})
 			);
 		}
@@ -76,7 +83,7 @@ export const showData = (id) => {
 export const addData = (notTodoObj) => {
 	return async (dispatch) => {
 		const addData = async () => {
-			const response = await fetch(`/new-notTodo`, {
+			const response = await fetch('/api/not-todos', {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
@@ -115,7 +122,7 @@ export const addData = (notTodoObj) => {
 export const removeData = (id) => {
 	return async (dispatch) => {
 		const removeData = async () => {
-			const response = await fetch(`/notTodos/${id}`, {
+			const response = await fetch(`/api/not-todos/${id}`, {
 				method: 'DELETE',
 				headers: {
 					Accept: 'application/json',
@@ -123,19 +130,17 @@ export const removeData = (id) => {
 				}
 			});
 			if (!response.ok) {
-				throw new Error('something went wrong');
+				throw new Error('throw error');
 			}
-			const data = await response.json();
-			return data;
 		};
 
 		try {
-			const result = await removeData();
+			await removeData();
 			dispatch(fetchData());
 			dispatch(
 				uiActions.showNotification({
 					title: 'success',
-					message: result.message
+					message: 'item deleted'
 				})
 			);
 		} catch (error) {

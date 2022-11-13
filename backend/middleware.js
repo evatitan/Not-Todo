@@ -58,7 +58,7 @@ function registerValidation(req, res, next) {
 function loginValidation(req, res, next) {
 	if (valitation.loginSchema.validate(req.body).error) {
 		let errorDetail = valitation.loginSchema.validate(req.body).error.details[0];
-		res.status(401).send(errorDetail);
+		res.status(400).send(errorDetail);
 		return;
 	}
 	next();

@@ -46,7 +46,7 @@ app.get('/api/not-todos/:id', async (req, res) => {
 	}
 });
 
-app.post('/api/not-todos/new', authRequiredMiddleware, mw.createNotTodoSchema, async (req, res) => {
+app.post('/api/not-todos', authRequiredMiddleware, mw.createNotTodoSchema, async (req, res) => {
 	const userId = req.session.user_id;
 
 	if (!userId) {
@@ -99,16 +99,14 @@ app.post('/api/register', mw.registerValidation, userInSesessionMiddleware, mw.m
 
 app.post('/api/login', mw.loginValidation, userInSesessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
 	let email = req.body.email;
-	let passwordHashed = mw.passwordHash(req.body.password);
-
-	if (!email || !passwordHashed) res.status(400).send({ error: errorDetail });
+	let password = req.body.password;
+	let passwordHashed = mw.passwordHash(password);
 
 	try {
 		let user = await db.checkLogin(email, passwordHashed);
 		let userId = user.id;
 		let sessionId = nanoid();
-		const sessionIdExisted = await db.checkSessionIdExisted(sessionId);
-		if (sessionIdExisted !== 0) return res.status(400).send({ error: errorDetail });
+
 		await db.createSession(sessionId, userId);
 
 		res.cookie('session_id', sessionId, {
@@ -118,7 +116,8 @@ app.post('/api/login', mw.loginValidation, userInSesessionMiddleware, mw.mustBeA
 
 		res.status(200).send({ message: 'Login successfully' });
 	} catch (error) {
-		res.status(401).send({ error: errorDetail });
+		console.error(error);
+		res.status(401).send({ error: error.toString() });
 	}
 });
 

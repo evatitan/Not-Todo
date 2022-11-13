@@ -144,10 +144,12 @@ function getUserById(id) {
 
 function checkLogin(email, password) {
 	return new Promise((resolve, reject) => {
-		let sql = 'SELECT * FROM users WHERE email = ? and password = ?'; // todo: comparar el pw con hash
+		let sql = 'SELECT * FROM users WHERE email = ? and password = ?';
 		db.query(sql, [ email, password ], (err, res) => {
 			if (err) {
 				reject(err);
+			} else if (res.length === 0) {
+				reject(new Error('not authorized'));
 			} else {
 				resolve(res[0]);
 			}

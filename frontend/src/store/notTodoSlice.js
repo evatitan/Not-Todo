@@ -83,7 +83,7 @@ export const showData = (id) => {
 export const addData = (notTodoObj) => {
 	return async (dispatch) => {
 		const addData = async () => {
-			const response = await fetch('/api/not-todos/new', {
+			const response = await fetch('/api/not-todos', {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',

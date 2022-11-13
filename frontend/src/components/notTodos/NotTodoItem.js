@@ -11,7 +11,8 @@ function NotTodoItem(props) {
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const { title, date, description, id } = props.item;
+	const { item: { title, date, description, id } } = props || {};
+	console.log('title-----', title);
 	const datePrint = date.slice(0, 10);
 
 	const deleteItemHandler = () => {
@@ -20,7 +21,7 @@ function NotTodoItem(props) {
 	};
 
 	const notTodos = (
-		<div className={classes.card}>
+		<div className={classes.card} data-testid={'not-todo-items'}>
 			<h2>
 				<i> {title} </i>
 			</h2>

@@ -1,152 +1,131 @@
+require('dotenv').config();
 const express = require('express');
-const db = require('./config/db');
 const mw = require('./middleware');
 const cors = require('cors');
 const { nanoid } = require('nanoid');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const pool  = require("./config/db")
 
 const app = express();
 const HTTP_PORT = process.env.HTTP_PORT || 4000;
-const HTTP_ADDR = process.env.HTTP_ADDR || '127.0.0.1'; // === localhost
+const HTTP_ADDR = process.env.HTTP_ADDR || 'localhost';
 
 app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(express.json())
 
-const authRequiredMiddleware = mw.createAuthRequired(db);
-const userInSesessionMiddleware = mw.createUserInSession(db);
+const authRequiredMiddleware = mw.createAuthRequired(pool);
+const userInSessionMiddleware = mw.createUserInSession(pool);
 
-// app.use(
-// 	session({
-// 		secret: '123',
-// 		resave: true,
-// 		saveUninitialized: true
-// 	})
-// );
+app.post('/api/register', mw.registerValidation, userInSessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
+	try {
+		const {email, password} = req.body;
+		const passwordHashed = mw.passwordHash(password);
+		const emailExisted = await pool.checkEmailExisted(email);
+		if (emailExisted) return res.status(409).send({ error: errorMsg });
+		const user = await pool.createUser(email, passwordHashed);
+		res.status(200).send({ message: 'Account created!' });
+	} catch (error) {
+		res.status(500).send({ error: error });
+	}
+});
+
+app.post('/api/login', mw.loginValidation, userInSessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
+	try {
+		console.log('login here')
+		const { email, password } = req.body;
+		const passwordHashed = mw.passwordHash(password);
+		const user = await pool.checkLogin(email, passwordHashed);
+		if (!user) res.status(401).json({message :"Invalid email or password"})
+		const sessionId = nanoid();
+		await pool.createSession(sessionId, user.id);
+		res.cookie('session_id', sessionId, {
+			httpOnly: true,
+			sameSite: true,
+			sameSite: 'lax', // more explicit and secure
+			maxAge: 7 * 24 * 60 * 60 * 1000 // 1 week
+		});
+		res.status(200).send({ message: 'Login successfully' });
+	} catch (error) {
+		console.error(error);
+		res.status(500).send({ error: "Internal server error" });
+	}
+});
 
 app.get('/api/not-todos', authRequiredMiddleware, async (req, res) => {
 	try {
-		const notTodos = await db.getNotTodosByUserId(req.session.user_id);
+		const notTodos = await pool.getNotTodosByUserId(req.session.user_id);
 		res.status(200).send(notTodos);
-	} catch (e) {
-		res.status(400).send({ error: e });
+	} catch (error) {
+		res.status(400).send({ error: error });
 	}
 });
 
 app.get('/api/not-todos/:id', async (req, res) => {
-	let idValid = req.params.id;
-	if (idValid) {
-		try {
-			let notTodo = await db.getOneNotTodo(idValid);
+	try {
+		const idValid = req.params.id;
+		if (idValid) { 
+			const notTodo = await pool.getOneNotTodo(idValid);
 			res.status(200).send(notTodo);
-		} catch (e) {
-			res.status(400).send({ error: eerror });
-		}
-	}
-});
-
-app.post('/api/not-todos', authRequiredMiddleware, mw.createNotTodoSchema, async (req, res) => {
-	const userId = req.session.user_id;
-
-	if (!userId) {
-		res.status(404).send({ message: 'something went wrong' });
-	}
-
-	try {
-		let user_id = userId;
-		let title = req.body.title;
-		let date = req.body.date;
-		let description = req.body.description;
-		let notTodo = [ user_id, title, date, description ];
-		let newNotTodo = await db.createNotTodo(notTodo);
-		res.status(200).send({ message: 'add a new not-to-do' });
-	} catch (error) {
-		res.status(400).send({ error: errorDetail });
-	}
-});
-
-app.delete('/api/not-todos/:id', mw.removeNotTodoQuerySchema, async (req, res) => {
-	let id = Number(req.params.id);
-	try {
-		let amountDeleted = await db.removeNotTodo(id);
-		if (amountDeleted === 1) {
-			res.status(204).end();
-		} else {
-			res.status(404).end();
 		}
 	} catch (error) {
 		res.status(400).send({ error: error });
 	}
 });
 
-app.post('/api/register', mw.registerValidation, userInSesessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
-	let email = req.body.email;
-	let password = req.body.password;
-
-	try {
-		let passwordHashed = mw.passwordHash(password);
-		// check if this email exist in user. If existed, emailExisted = 1
-		let emailExisted = await db.checkEmailExisited(email);
-		if (emailExisted !== 0) return res.status(409).send({ error: errorMsg });
-		let user = await db.createUser(email, passwordHashed);
-		// console.log('user', user);
-		res.status(200).send({ message: 'Account created!' });
-	} catch (error) {
-		res.status(500).send({ error: errorMsg });
-	}
-});
-
-app.post('/api/login', mw.loginValidation, userInSesessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
-	let email = req.body.email;
-	let password = req.body.password;
-	let passwordHashed = mw.passwordHash(password);
-
-	try {
-		let user = await db.checkLogin(email, passwordHashed);
-		let userId = user.id;
-		let sessionId = nanoid();
-
-		await db.createSession(sessionId, userId);
-
-		res.cookie('session_id', sessionId, {
-			httpOnly: true,
-			sameSite: true
-		});
-
-		res.status(200).send({ message: 'Login successfully' });
-	} catch (error) {
-		console.error(error);
-		res.status(401).send({ error: error.toString() });
-	}
-});
-
 app.get('/api/profile', authRequiredMiddleware, async (req, res) => {
-	const userId = req.session.user_id;
-	if (!userId) {
-		res.status(404).send({ message: 'not found' }).end();
-	}
 	try {
-		const user = await db.getUserById(userId);
+		const userId = req.session.user_id;
+		if (!userId) 	res.status(404).send({ message: 'not found' }).end();
+		const user = await pool.getUserById(userId);
 		res.status(200).send(user);
 	} catch (error) {
 		res.status(401).send({ error: error });
 	}
 });
 
-app.post('/api/logout', authRequiredMiddleware, async (req, res) => {
-	const session_id = req.session.session_id;
-
-	if (!session_id) {
-		res.status(403).end();
-	}
-
+app.post('/api/not-todos', authRequiredMiddleware, mw.createNotTodoSchema, async (req, res) => {
 	try {
-		await db.removeSessionBySessionId(session_id);
+		const userId = req.session.user_id;
+		if (!userId) res.status(404).send({ message: 'something went wrong' });
+		
+		const user_id = userId;
+		const title = req.body.title;
+		const date = req.body.date;
+		const description = req.body.description;
+		const notTodo = { user_id, title, date, description };
+		const newNotTodo = await pool.createNotTodo(notTodo);
+		res.status(200).send({ message: 'add a new not-to-do' });
+	} catch (error) {
+		res.status(400).send({ error: errorDetail });
+	}
+});
+
+app.post('/api/logout', authRequiredMiddleware, async (req, res) => {
+	try {
+		const session_id = req.session.session_id;
+		if (!session_id) res.status(403).end();
+		await pool.removeSessionBySessionId(session_id);
 		res.clearCookie('session_id');
 		res.status(200).end();
 	} catch (error) {
 		res.status(403).end();
+	}
+});
+
+app.delete('/api/not-todos/:id', mw.removeNotTodoQuerySchema, async (req, res) => {
+	try {
+		const id = Number(req.params.id);
+		const amountDelete = await pool.removeNotTodo(id);
+		if (amountDelete === 1) {
+			res.status(204).end();
+		} else {
+			res.status(404).end();
+		}
+	} catch (error) {
+		res.status(400).send({ error: error });
 	}
 });
 

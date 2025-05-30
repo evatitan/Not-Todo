@@ -1,238 +1,185 @@
-const mysql = require('mysql2');
+require("dotenv").config();
+const { URL } = require("url");
+const mysql = require('mysql2/promise');
+const { error } = require("console");
+const dbUrl = new URL(process.env.MYSQL_URL)
 
 const dbOptions = {
-	host: process.env.DB_HOST || 'localhost',
-	user: process.env.DB_USER || 'root',
-	password: process.env.DB_PASSWORD || 'admin',
-	database: process.env.DB_NAME || 'not_to_do'
+	host: dbUrl.hostname,
+	user: dbUrl.username,
+	password: dbUrl.password,
+	database: dbUrl.pathname.slice(1),// remove leading "/"
+	port: dbUrl.port,
+	waitForConnections: true,
+	connectionLimit: 10,
+	queueLimit: 0
 };
 
-let db = mysql.createConnection(dbOptions);
+const pool = mysql.createPool(dbOptions);
 
-db.connect(function(err, res) {
-	if (err) console.log(err);
-	else console.log('DB connected!');
-});
-
-// db.oldQuery = db.query.bind(db);
-// db.query = function(...args) {
-// 	console.log(args);
-// 	return db.oldQuery(...args);
-// };
-
-// NOT-TO-DOS
-// ok
-// function getNotTodos() {
-// 	return new Promise((resolve, reject) => {
-// 		db.query('select * from not_to_dos order by id', (err, res) => {
-// 			if (err) {
-// 				reject(err);
-// 			} else {
-// 				resolve(res);
-// 			}
-// 		});
-// 	});
-// }
-
-function getNotTodosByUserId(id) {
-	return new Promise((resolve, reject) => {
-		let sql = `select id, user_id,title,date,description from not_to_dos where  user_id = ?`;
-		db.query(sql, id, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res);
-			}
-		});
-	});
+async function checkEmailExisted(email) {
+	try {
+	let sql = `SELECT EXISTS(SELECT * FROM users WHERE email = ?) as EXISTED`;
+		const [rows] = await pool.query(sql, [email])
+	  return rows[0].EXISTED === 1
+	} catch (error) {
+		console.error( error)
+		throw error
+	}
 }
 
-// done
-function getOneNotTodo(id) {
-	return new Promise((resolve, reject) => {
-		db.query('select * from not_to_dos where id = ?', id, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				if (res.length === 0) {
-					resolve(null);
-				} else {
-					resolve(res[0]);
-				}
-			}
-		});
-	});
-}
-// Todo
-function createNotTodo(notTodo) {
-	return new Promise((resolve, reject) => {
-		let sql = 'INSERT INTO not_to_dos(user_id,title,date,description) VALUES(?,?,?,?)';
-		db.query(sql, notTodo, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res);
-			}
-		});
-	});
-}
-// Todo
-function updateNotTodo(NewNotTodo) {
-	return new Promise((resolve, reject) => {
-		let sql = 'UPDATE not_to_dos SET user_id=?,title=?,date=?,description=?,status=?';
-		db.query(sql, NewNotTodo, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res);
-			}
-		});
-	});
+async function createUser(email, password) {
+	try {
+		const sql = `INSERT INTO users(email,password) VALUES(?,?)`
+		const [res] = await pool.query(sql, [email, password])
+		if (res.affectedRows !== 1) throw new Error('User insert failed');
+		return res
+ } catch (error) {
+	 console.error(error)
+	 throw error
+	}
 }
 
-function removeNotTodo(id) {
-	return new Promise((resolve, reject) => {
-		db.query('delete from not_to_dos where id = ?', id, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res.affectedRows);
-			}
-		});
-	});
-}
-
-// USERS
-function checkEmailExisited(email) {
-	return new Promise((resolve, reject) => {
-		let sql = `SELECT EXISTS(SELECT * FROM users WHERE email = ?) as EXISTED`;
-		db.query(sql, email, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res[0].EXISTED);
-			}
-		});
-	});
-}
-
-function createUser(email, password) {
-	return new Promise((resolve, reject) => {
-		let sql = 'INSERT INTO users(email,password) VALUES(?,?)';
-		db.query(sql, [ email, password ], (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res);
-			}
-		});
-	});
-}
-
-function getUserById(id) {
-	return new Promise((resolve, reject) => {
-		let sql = `select users.id, users.email from users where id= ?`;
-		db.query(sql, id, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res[0]);
-			}
-		});
-	});
-}
-
-function checkLogin(email, password) {
-	return new Promise((resolve, reject) => {
+async function checkLogin(email, password) {
+	try {
 		let sql = 'SELECT * FROM users WHERE email = ? and password = ?';
-		db.query(sql, [ email, password ], (err, res) => {
-			if (err) {
-				reject(err);
-			} else if (res.length === 0) {
-				reject(new Error('not authorized'));
-			} else {
-				resolve(res[0]);
-			}
-		});
-	});
-}
-// authentication
-function checkSessionIdExisted(sessionId) {
-	return new Promise((resolve, reject) => {
-		let sql = `SELECT EXISTS(SELECT * FROM sessions WHERE session_id = ?) as EXISTED`;
-		db.query(sql, sessionId, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res[0].EXISTED);
-			}
-		});
-	});
+		const [rows] = await pool.query(sql, [email, password])
+		if(rows.length===0) throw new Error("Invalid email or password")
+		return rows[0]
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
 }
 
-function checkSessionExistedByUserId(userId) {
-	return new Promise((resolve, reject) => {
-		let sql = `SELECT EXISTS(SELECT * FROM sessions WHERE session_id = ?) as EXISTED`;
-		db.query(sql, userId, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res[0].EXISTED);
-			}
-		});
-	});
-}
-
-function createSession(sessionId, userId) {
-	return new Promise((resolve, reject) => {
+async function createSession(sessionId, userId) {
+	try {
 		let sql = 'INSERT INTO sessions(session_id, user_id) VALUES (?, ?)';
-		db.query(sql, [ sessionId, userId ], (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res);
-			}
-		});
-	});
+		const [res] = await pool.query(sql, [sessionId, userId])
+		if(res.affectedRows !== 1) throw new Error("create session failed")
+		return res
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
 }
 
-function getSessionById(sessionId) {
-	return new Promise((resolve, reject) => {
+async function getNotTodosByUserId(id) {
+	try {
+		const sql = `select id, user_id,title,date,description from not_to_dos where user_id = ?`
+		const [res] = await pool.query(sql, [id])
+		// should check?
+		return res
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
+async function getOneNotTodo(id) {
+	try {
+		const sql = `SELECT * from not_to_dos where id = ?`
+		const [rows] = await pool.query(sql, [id])
+		if(rows.length===0) throw new Error("fetch failed")
+		return rows[0]
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
+async function getUserById(id) {
+	try {
+		const sql = `select users.id, users.email from users where id= ?`;
+		const [rows] = await pool.query(sql, [id])
+		if (!rows.length) throw new Error("Get user failed")
+		return rows[0]
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
+async function createNotTodo(notTodo) {
+	try {
+		const sql = 'INSERT INTO not_to_dos(user_id,title,date,description) VALUES(?,?,?,?)';
+		const params = [notTodo.user_id, notTodo.title, notTodo.date, notTodo.description];
+		const [rows] = await pool.query(sql, params)
+		if (rows.affectedRows !== 1) throw new Error("Insert failed")
+		return rows
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
+async function removeSessionBySessionId(sessionId) {
+	try {
+		const sql = 'delete from sessions where session_id = ?';
+		const [res] = await pool.query(sql, [sessionId])
+		if (res.affectedRows !== 1) throw new Error("delete session failed")
+		return res
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
+async function removeNotTodo(id) {
+	try {
+		const sql = 'delete from not_to_dos where id = ?'
+		const [res] = await pool.query(sql, [id])
+		if (res.affectedRows !== 1) throw new Error("delete not todo failed") 
+		return res.affectedRows
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
+// authentication
+async function checkSessionIdExisted(sessionId) {
+	try {
+		let sql = `SELECT EXISTS(SELECT * FROM sessions WHERE session_id = ?) as EXISTED`;
+		const [rows] = await pool.query(sql, [sessionId])
+		return rows[0].EXISTED===1
+		
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
+async function checkSessionExistedByUserId(userId) {
+	try {
+		let sql = `SELECT EXISTS(SELECT * FROM sessions WHERE session_id = ?) as EXISTED`;
+		const [rows] = await pool.query(sql, [userId])
+		return rows[0].EXISTED === 1
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
+}
+
+async function getSessionById(sessionId) {
+	try {
 		let sql = 'select * from sessions where session_id = ?';
-		db.query(sql, sessionId, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				if (res.length === 0) {
-					return reject(new Error('session id does not exist'));
-				}
-				resolve(res[0]);
-			}
-		});
-	});
-}
-
-function removeSessionBySessionId(sessionId) {
-	return new Promise((resolve, reject) => {
-		let sql = 'delete from sessions where session_id = ?';
-		db.query(sql, sessionId, (err, res) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(res);
-			}
-		});
-	});
+		const [rows] = await pool.query(sql, [sessionId])
+		if(rows.length === 0) throw new Error("fetch session faild")
+		return rows[0]
+	} catch (error) {
+		console.error(error)
+		throw error
+	}
 }
 
 module.exports = {
-	// getNotTodos,
+	pool,
 	getNotTodosByUserId,
 	getOneNotTodo,
 	createNotTodo,
-	updateNotTodo,
 	removeNotTodo,
-	checkEmailExisited,
+	checkEmailExisted,
 	createUser,
 	getUserById,
 	checkLogin,

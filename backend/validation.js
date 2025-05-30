@@ -18,7 +18,7 @@ const createNotTodoSchema = Joi.object({
 	description: Joi.string().max(2000).required()
 });
 
-// query valitation for GET & DELETE
+// query validation for GET & DELETE
 const notTodoQuerySchema = Joi.object({
 	id: Joi.number().required()
 });

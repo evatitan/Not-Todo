@@ -1,13 +1,13 @@
 import React, { Fragment } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet"
 import Profile from '../components/auth/Profile';
 function ProfilePage() {
 	return (
 		<Fragment>
-			<MetaTags>
+			<Helmet>
 				<title>Profile</title>
 				<meta name="description" content="Profile" />
-			</MetaTags>
+			</Helmet>
 			<Profile />
 		</Fragment>
 	);

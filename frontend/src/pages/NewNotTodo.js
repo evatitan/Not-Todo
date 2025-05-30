@@ -1,14 +1,14 @@
 import React, { Fragment } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet"
 import NewNotTodoForm from '../components/notTodos/NewNotTodoForm';
 
 function NewNotTodo() {
 	return (
 		<Fragment>
-			<MetaTags>
+			<Helmet>
 				<title>Add a NOT-TODO</title>
 				<meta name="description" content="Add a new not-todo from here" />
-			</MetaTags>
+			</Helmet>
 			<NewNotTodoForm />
 		</Fragment>
 	);

@@ -1,14 +1,15 @@
 import React, { Fragment } from 'react';
-import MetaTags from 'react-meta-tags';
+
+import { Helmet } from "react-helmet"
 import Register from '../components/auth/Register';
 
 function RegisterPage() {
 	return (
 		<Fragment>
-			<MetaTags>
+			<Helmet>
 				<title>Profile</title>
 				<meta name="description" content="Profile" />
-			</MetaTags>
+			</Helmet>
 			<Register />
 		</Fragment>
 	);

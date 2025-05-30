@@ -122,7 +122,13 @@ export const profile = () => {
 	return async (dispatch) => {
 		const profile = async () => {
 			dispatch(authActions.isLoading());
-			const response = await fetch('/api/profile');
+			const response = await fetch('/api/profile', {
+				method: 'GET',
+				headers: {
+					Accept: 'application/json',
+				},
+				credentials: 'include' // <-- add this if using cookies
+			});
 			if (!response.ok) {
 				throw new Error('something went wrong');
 			}

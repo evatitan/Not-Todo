@@ -1,14 +1,14 @@
 import React, { Fragment } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet"
 import Login from '../components/auth/Login';
 
 function LoginPage() {
 	return (
 		<Fragment>
-			<MetaTags>
+			<Helmet>
 				<title>Login</title>
 				<meta name="description" content="Login your not-todo app" />
-			</MetaTags>
+			</Helmet>
 			<Login />
 		</Fragment>
 	);

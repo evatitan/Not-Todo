@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import MetaTags from 'react-meta-tags';
+import { Helmet } from "react-helmet"
 import { useSelector } from 'react-redux';
 import NotTodoList from '../components/notTodos/NotTodoList';
 
@@ -8,10 +8,10 @@ function NotTodos() {
 
 	return (
 		<Fragment>
-			<MetaTags>
+			<Helmet>
 				<title>All NOT-TODOs</title>
 				<meta name="description" content="All of your not-todo list" />
-			</MetaTags>
+			</Helmet>
 			<NotTodoList notTodos={notTodos} />
 		</Fragment>
 	);

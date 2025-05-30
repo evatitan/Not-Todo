@@ -20,12 +20,10 @@ const notTodoSlice = createSlice({
 });
 
 export const fetchData = () => {
-	console.log('notTodoActions', notTodoActions)
 	return async (dispatch) => {
 		const fetchData = async () => {
 			dispatch(notTodoActions.isLoading());
 			const response = await fetch('/api/not-todos');
-			console.log('response', response)
 			if (!response.ok) {
 				throw new Error('Could not fetch not-todos!');
 			}

@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialcartState = { notification: null };
+const initialCartState = { notification: null };
 
 const uiSlice = createSlice({
 	name: 'ui',
-	initialState: initialcartState,
+	initialState: initialCartState,
 
 	reducers: {
 		showNotification: (state, action) => {

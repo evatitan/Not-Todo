@@ -12,7 +12,6 @@ function NotTodoItem(props) {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const { item: { title, date, description, id } } = props || {};
-	console.log('title-----', title);
 	const datePrint = date.slice(0, 10);
 
 	const deleteItemHandler = () => {

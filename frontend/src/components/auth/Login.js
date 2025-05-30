@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../../store/authSlice';
-// import { authActions } from '../../store/authSlice';
 import classes from './Login.module.css';
 
 function Login(props) {
@@ -39,9 +38,9 @@ function Login(props) {
 						<input type="password" required id="password" ref={passwordInputRef} />
 					</div>
 					<div className={classes.actions}>
-						<button>Login</button>
+						<button data-testid="login">Login</button>
 						<Link to="/register">
-							<button type="button" className={classes.toggle}>
+							<button type="button" className={classes.toggle} data-testid="create-new-account">
 								Create new Account
 							</button>
 						</Link>
@@ -53,7 +52,7 @@ function Login(props) {
 
 	return (
 		<React.Fragment>
-			{isLoading && <p>Loading</p>}
+			{isLoading && <p data-testid="loading">Loading</p>}
 			{!isLoading && loginHtml}
 		</React.Fragment>
 	);

@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../../store/authSlice';
-// import { authActions } from '../../store/authSlice';
 import classes from './Register.module.css';
 
 function Register() {
@@ -17,7 +16,6 @@ function Register() {
 		event.preventDefault();
 		const enteredEmail = emailInputRef.current.value;
 		const enteredPassword = passwordInputRef.current.value;
-		// todo: validation
 		const newUser = {
 			email: enteredEmail,
 			password: enteredPassword
@@ -41,7 +39,7 @@ function Register() {
 						<input type="password" required id="password" ref={passwordInputRef} />
 					</div>
 					<div className={classes.actions}>
-						<button>Create Account</button>
+						<button data-testid="create-account">Create Account</button>
 
 						<Link to="/login">
 							<button type="button" className={classes.toggle}>

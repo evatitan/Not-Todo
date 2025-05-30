@@ -37,9 +37,8 @@ export const register = (user) => {
 			});
 
 			if (!response.ok) {
-				// Los estados de error que son conocidos que devuelves un json
-				// en el body los tratamos para crear errores con mas significado
-				// que luego podemos mostrar en notificaciones
+				// Known error statuses that return a JSON body are handled
+				// to create more meaningful errors that can be shown in notifications
 				if ([ 409, 401 ].includes(response.status)) {
 					const error = await response.json();
 					throw new Error(error.message);
@@ -48,7 +47,6 @@ export const register = (user) => {
 			}
 
 			const data = await response.json();
-			console.log('data', data);
 			return data;
 		};
 

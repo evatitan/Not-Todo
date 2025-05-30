@@ -2,7 +2,6 @@ const { pool } = require("./db")
 require("dotenv").config();
 const { URL } = require("url");
 const dbUrl = new URL(process.env.MYSQL_URL)
-// console.log('dbUrl', dbUrl)
 
 async function initDB() { 
   try {

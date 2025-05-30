@@ -6,14 +6,8 @@ const Notification = (props) => {
 	const { title, message } = props;
 	let specialClasses = '';
 
-	if (title === 'error') {
-		specialClasses = classes.error;
-	}
-
-	if (title === 'success') {
-		specialClasses = classes.success;
-	}
-
+	if (title === 'error') specialClasses = classes.error;
+	if (title === 'success') specialClasses = classes.success;
 	const cssClasses = `${classes.notification} ${specialClasses}`;
 
 	useEffect(

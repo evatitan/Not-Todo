@@ -17,8 +17,7 @@ function Profile() {
 		<div className={classes.grid}>
 			<div className={classes.card}>
 				<h1>welcome</h1>
-				<h2> {user.email}</h2>
-
+				<h2>{user.email}</h2>
 				<div className={classes.actions}>
 					<button onClick={logoutHandler}>Logout</button>
 				</div>

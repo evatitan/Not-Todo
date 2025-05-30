@@ -34,7 +34,6 @@ app.post('/api/register', mw.registerValidation, userInSessionMiddleware, mw.mus
 
 app.post('/api/login', mw.loginValidation, userInSessionMiddleware, mw.mustBeAnonymous, async (req, res) => {
 	try {
-		console.log('login here')
 		const { email, password } = req.body;
 		const passwordHashed = mw.passwordHash(password);
 		const user = await pool.checkLogin(email, passwordHashed);

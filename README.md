@@ -16,6 +16,13 @@ Built with React (frontend) and Node.js/Express/MySQL (backend).
 
 ---
 
+
+## Screenshots
+![Homepage Screenshot](./frontend/public/img/Not-Todo.png)
+![AddNotTodoPage Screenshot](./frontend/public/img/Add-Not-Todo.png)
+
+---
+
 ## Project Structure
 
 ```

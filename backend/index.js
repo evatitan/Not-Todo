@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const rateLimit = require("express-rate-limit")
 const mw = require('./middleware');
 const cors = require('cors');
 const { nanoid } = require('nanoid');
@@ -15,6 +16,14 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.json())
+
+app.set("trust proxy", 1)
+
+const limiter = rateLimit({
+	windowMs: 60 * 1000,
+	max:10
+})
+app.use(limiter)
 
 const authRequiredMiddleware = mw.createAuthRequired(pool);
 const userInSessionMiddleware = mw.createUserInSession(pool);
